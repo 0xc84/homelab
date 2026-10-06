@@ -1,0 +1,48 @@
+services:
+  miniflux:
+    image: miniflux/miniflux:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      miniflux_db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://miniflux:${MINIFLUX_DATABASE_PASSWORD}@miniflux_db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=${MINIFLUX_ADMIN_PASSWORD}
+
+  miniflux_db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=${MINIFLUX_DATABASE_PASSWORD}
+      - POSTGRES_DB=miniflux
+    volumes:
+      - miniflux-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      start_period: 30s
+
+  linkding:
+    image: sissbruecker/linkding:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - linkding-db:/etc/linkding/data
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+
+volumes:
+  miniflux-db:
+  linkding-db:
