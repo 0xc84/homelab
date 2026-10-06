@@ -1,0 +1,22 @@
+server_name: "matrix.0xc84.fyi"
+public_baseurl: https://matrix.0xc84.fyi
+pid_file: /data/homeserver.pid
+serve_server_wellknown: true
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
+
+database:
+  name: psycopg2
+  args:
+    user: matrix
+    database: matrix
+    host: matrix_db
+    cp_min: 5
+    cp_max: 10
