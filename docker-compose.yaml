@@ -9,6 +9,10 @@ services:
       - PGPASSWORD=${MATRIX_DATABASE_PASSWORD}
     volumes:
       - matrix-server-data:/data
+    secrets:
+      - matrix-registration-shared-secret
+      - matrix-macaroon-secret-key
+      - matrix-form-secret
 
   matrix_db:
     image: postgres:18
@@ -72,3 +76,11 @@ volumes:
   matrix-server-data:
     external: true
     name: homelab_matrix-server-data
+
+secrets:
+  matrix-registration-shared-secret:
+    file: ./secrets/matrix/registration_shared_secret
+  matrix-macaroon-secret-key:
+    file: ./secrets/matrix/macaroon_secret_key
+  matrix-form-secret:
+    file: ./secrets/matrix/form_secret

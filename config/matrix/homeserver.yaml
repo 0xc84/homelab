@@ -1,16 +1,16 @@
-server_name: "matrix.0xc84.fyi"
-public_baseurl: https://matrix.0xc84.fyi
+server_name: "0xc84.fyi"
 pid_file: /data/homeserver.pid
-serve_server_wellknown: true
 
 listeners:
   - port: 8008
+    resources:
+      - compress: false
+        names:
+          - client
+          - federation
     tls: false
     type: http
     x_forwarded: true
-    resources:
-      - names: [client, federation]
-        compress: false
 
 database:
   name: psycopg2
@@ -20,3 +20,15 @@ database:
     host: matrix_db
     cp_min: 5
     cp_max: 10
+
+registration_shared_secret_path: /run/secrets/matrix-registration-shared-secret
+macaroon_secret_key_path: /run/secrets/matrix-macaroon-secret-key
+form_secret_path: /run/secrets/matrix-form-secret
+
+log_config: "/data/matrix.0xc84.fyi.log.config"
+media_store_path: /data/media_store
+signing_key_path: "/data/matrix.0xc84.fyi.signing.key"
+
+report_stats: false
+trusted_key_servers:
+  - server_name: "matrix.org"
