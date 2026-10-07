@@ -1,86 +1,118 @@
 services:
-  matrix_server:
-    image: matrixdotorg/synapse:latest
-    restart: unless-stopped
-    depends_on:
-      matrix_db:
-        condition: service_healthy
-    environment:
-      - PGPASSWORD=${MATRIX_DATABASE_PASSWORD}
-    volumes:
-      - matrix-server-data:/data
-    secrets:
-      - matrix-registration-shared-secret
-      - matrix-macaroon-secret-key
-      - matrix-form-secret
+    matrix_server:
+        image: matrixdotorg/synapse:latest
+        restart: unless-stopped
+        depends_on:
+            - matrix_db
+        environment:
+            - PGPASSWORD=${MATRIX_DATABASE_PASSWORD}
+            - SYNAPSE_CONFIG_PATH=/config/homeserver.yaml
+        volumes:
+            - matrix-server-data:/data
+            - ./config/matrix/homeserver.yaml:/config/homeserver.yaml:ro
+        secrets:
+            - matrix-registration-shared-secret
+            - matrix-macaroon-secret-key
+            - matrix-form-secret
 
-  matrix_db:
-    image: postgres:18
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=matrix
-      - POSTGRES_PASSWORD=${MATRIX_DATABASE_PASSWORD}
-      - POSTGRES_DB=matrix
-      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
-    volumes:
-      - matrix-db:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "matrix"]
-      interval: 10s
-      start_period: 30s
+    matrix_db:
+        image: postgres:18
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=matrix
+            - POSTGRES_PASSWORD=${MATRIX_DATABASE_PASSWORD}
+            - POSTGRES_DB=matrix
+            - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+        volumes:
+            - matrix-db:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "matrix"]
+            interval: 10s
+            start_period: 30s
 
-  miniflux:
-    image: miniflux/miniflux:latest
-    restart: unless-stopped
-    depends_on:
-      miniflux_db:
-        condition: service_healthy
-    environment:
-      - DATABASE_URL=postgres://miniflux:${MINIFLUX_DATABASE_PASSWORD}@miniflux_db/miniflux?sslmode=disable
-      - RUN_MIGRATIONS=1
-      - CREATE_ADMIN=1
-      - ADMIN_USERNAME=admin
-      - ADMIN_PASSWORD=${MINIFLUX_ADMIN_PASSWORD}
+    mc:
+        image: itzg/minecraft-server:latest
+        restart: unless-stopped
+        depends_on:
+            - drasl
+        ports:
+            - "100.68.127.9:25565:25565"
+        environment:
+            EULA: "TRUE"
+            TYPE: "PAPER"
+            VERSION: "26.3"
+            MEMORY: "4G"
+            ONLINE_MODE: "TRUE"
+            ENABLE_WHITELIST: "TRUE"
+            ENFORCE_WHITELIST: "TRUE"
+            JVM_OPTS: "-javaagent:/authlib-injector.jar=http://drasl:25585/authlib-injector"
+        volumes:
+            - mc-data:/data
+            - ./data/mc/authlib-injector.jar:/authlib-injector.jar:ro
 
-  miniflux_db:
-    image: postgres:18
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=miniflux
-      - POSTGRES_PASSWORD=${MINIFLUX_DATABASE_PASSWORD}
-      - POSTGRES_DB=miniflux
-    volumes:
-      - miniflux-db:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "miniflux"]
-      interval: 10s
-      start_period: 30s
+    drasl:
+        image: unmojang/drasl
+        restart: unless-stopped
+        ports:
+            - "100.68.127.9:25585:25585"
+        volumes:
+            - ./config/drasl:/etc/drasl
+            - drasl-data:/var/lib/drasl
 
-  linkding:
-    image: sissbruecker/linkding:latest
-    restart: unless-stopped
-    volumes:
-      - linkding-db:/etc/linkding/data
+    miniflux:
+        image: miniflux/miniflux:latest
+        restart: unless-stopped
+        depends_on:
+            miniflux_db:
+                condition: service_healthy
+        environment:
+            - DATABASE_URL=postgres://miniflux:${MINIFLUX_DATABASE_PASSWORD}@miniflux_db/miniflux?sslmode=disable
+            - RUN_MIGRATIONS=1
+            - CREATE_ADMIN=1
+            - ADMIN_USERNAME=admin
+            - ADMIN_PASSWORD=${MINIFLUX_ADMIN_PASSWORD}
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    environment:
-      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    miniflux_db:
+        image: postgres:18
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=miniflux
+            - POSTGRES_PASSWORD=${MINIFLUX_DATABASE_PASSWORD}
+            - POSTGRES_DB=miniflux
+        volumes:
+            - miniflux-db:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "miniflux"]
+            interval: 10s
+            start_period: 30s
+
+    linkding:
+        image: sissbruecker/linkding:latest
+        restart: unless-stopped
+        volumes:
+            - linkding-db:/etc/linkding/data
+
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        restart: unless-stopped
+        command: tunnel --no-autoupdate run
+        environment:
+            TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
 
 volumes:
-  miniflux-db:
-  linkding-db:
-  matrix-db:
-  matrix-server-data:
-    external: true
-    name: homelab_matrix-server-data
+    matrix-db:
+    matrix-server-data:
+        external: true
+        name: homelab_matrix-server-data
+    mc-data:
+    drasl-data:
+    miniflux-db:
+    linkding-db:
 
 secrets:
-  matrix-registration-shared-secret:
-    file: ./secrets/matrix/registration_shared_secret
-  matrix-macaroon-secret-key:
-    file: ./secrets/matrix/macaroon_secret_key
-  matrix-form-secret:
-    file: ./secrets/matrix/form_secret
+    matrix-registration-shared-secret:
+        file: ./secrets/matrix/registration_shared_secret
+    matrix-macaroon-secret-key:
+        file: ./secrets/matrix/macaroon_secret_key
+    matrix-form-secret:
+        file: ./secrets/matrix/form_secret

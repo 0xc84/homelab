@@ -1,0 +1,3 @@
+Domain = "auth.mc.0xc84.fyi"
+BaseURL = "http://auth.mc.0xc84.fyi:25585"
+DefaultAdmins = ["mukesh"]
