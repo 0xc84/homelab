@@ -48,7 +48,7 @@ services:
             JVM_OPTS: "-javaagent:/authlib-injector.jar=http://drasl:25585/authlib-injector"
         volumes:
             - mc-data:/data
-            - ./data/mc/authlib-injector.jar:/authlib-injector.jar:ro
+            - ./include/mc/authlib-injector.jar:/authlib-injector.jar:ro
 
     drasl:
         image: unmojang/drasl
