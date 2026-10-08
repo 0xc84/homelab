@@ -36,7 +36,7 @@ services:
         depends_on:
             - drasl
         ports:
-            - "100.68.127.9:25565:25565"
+            - "${TAILSCALE_HOMELAB_IP}:25565:25565"
         environment:
             EULA: "TRUE"
             TYPE: "PAPER"
@@ -54,7 +54,7 @@ services:
         image: unmojang/drasl
         restart: unless-stopped
         ports:
-            - "100.68.127.9:25585:25585"
+            - "${TAILSCALE_HOMELAB_IP}:25585:25585"
         volumes:
             - ./config/drasl:/etc/drasl
             - drasl-data:/var/lib/drasl

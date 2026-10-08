@@ -1,3 +1,3 @@
 # homelab
 
-everything related to my tiny homelab setup
+everything related to 0xc84's homelab ecosystem
