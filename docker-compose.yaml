@@ -1,4 +1,5 @@
 services:
+    # matrix
     matrix_server:
         image: matrixdotorg/synapse:latest
         restart: unless-stopped
@@ -30,6 +31,7 @@ services:
             interval: 10s
             start_period: 30s
 
+    # minecraft
     mc:
         image: itzg/minecraft-server:latest
         restart: unless-stopped
@@ -59,6 +61,29 @@ services:
             - ./config/drasl:/etc/drasl
             - drasl-data:/var/lib/drasl
 
+    # nitter
+    nitter:
+        image: mv12star/shitter:latest
+        restart: unless-stopped
+        depends_on:
+            - nitter_redis
+        volumes:
+            - ./config/nitter/nitter.conf:/src/nitter.conf:ro
+            - ./secrets/nitter/sessions.jsonl:/src/sessions.jsonl:ro
+
+    nitter_redis:
+        image: redis:6-alpine
+        restart: unless-stopped
+        command: redis-server --save 60 1 --loglevel warning
+        volumes:
+            - nitter-redis:/data
+        healthcheck:
+            test: redis-cli ping
+            interval: 30s
+            timeout: 5s
+            retries: 2
+
+    # miniflux
     miniflux:
         image: miniflux/miniflux:latest
         restart: unless-stopped
@@ -86,12 +111,14 @@ services:
             interval: 10s
             start_period: 30s
 
+    # linkding
     linkding:
         image: sissbruecker/linkding:latest
         restart: unless-stopped
         volumes:
             - linkding-db:/etc/linkding/data
 
+    # cloudflare daemon
     cloudflared:
         image: cloudflare/cloudflared:latest
         restart: unless-stopped
@@ -106,6 +133,7 @@ volumes:
         name: homelab_matrix-server-data
     mc-data:
     drasl-data:
+    nitter-redis:
     miniflux-db:
     linkding-db:
 
