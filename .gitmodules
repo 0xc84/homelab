@@ -1,0 +1,3 @@
+[submodule "include/nitter_proxy"]
+	path = include/nitter_proxy
+	url = https://codeberg.org/shitter/nitter-proxy.git

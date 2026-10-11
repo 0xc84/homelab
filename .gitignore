@@ -1,4 +1,7 @@
 .env
 secrets/
+build/
+
 # nitter config contains hmac key, so instead use `./scripts/setup_nitter_config.sh` script to generate the actual config
 config/nitter/nitter.conf
+config/nitter/nitter_proxy.conf

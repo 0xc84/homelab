@@ -71,6 +71,15 @@ services:
             - ./config/nitter/nitter.conf:/src/nitter.conf:ro
             - ./secrets/nitter/sessions.jsonl:/src/sessions.jsonl:ro
 
+    nitter_proxy:
+        build: ./images/nitter_proxy.Dockerfile
+        restart: unless-stopped
+        depends_on:
+            - nitter_redis
+        command: ["-config", "nitter_proxy.conf"]
+        volumes:
+            - ./config/nitter/nitter_proxy.conf:/nitter_proxy.conf:ro
+
     nitter_redis:
         image: redis:6-alpine
         restart: unless-stopped
