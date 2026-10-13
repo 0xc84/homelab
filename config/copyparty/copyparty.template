@@ -14,9 +14,9 @@
   .
   accs:
     r: *
-    rwd: mukesh, anurag
+    rwmd: mukesh, anurag
 
 [/shows]
   ./shows
   accs:
-    rwd: mukesh
+    rwmd: mukesh
