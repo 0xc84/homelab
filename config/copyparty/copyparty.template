@@ -1,0 +1,22 @@
+[global]
+  p: 8086
+  xff-src: lan
+  rproxy: 1
+  e2dsa          # file indexing and filesystem scanning
+  e2ts           # multimedia indexing
+  z, qr          # zeroconf and qrcode
+
+[accounts]
+  mukesh: ${COPYPARTY_MUKESH_PASSWORD}
+  anurag: ${COPYPARTY_ANURAG_PASSWORD}
+
+[/]
+  .
+  accs:
+    r: *
+    rwd: mukesh, anurag
+
+[/shows]
+  ./shows
+  accs:
+    rwd: mukesh
