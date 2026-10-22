@@ -5,10 +5,10 @@
   e2dsa          # file indexing and filesystem scanning
   e2ts           # multimedia indexing
   z, qr          # zeroconf and qrcode
-
 [accounts]
   mukesh: ${COPYPARTY_MUKESH_PASSWORD}
   anurag: ${COPYPARTY_ANURAG_PASSWORD}
+  ayaan: ${COPYPARTY_AYAAN_PASSWORD}
 
 [/]
   .
@@ -16,7 +16,14 @@
     r: *
     rwmd: mukesh, anurag
 
-[/shows]
-  ./shows
+[/media]
+  ./media
   accs:
+    r: anurag
     rwmd: mukesh
+
+[/pictures]
+  ./pictures
+  accs:
+    r: *
+    rwmd: mukesh, anurag, ayaan

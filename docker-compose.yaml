@@ -38,6 +38,7 @@ services:
     depends_on:
       - drasl
     ports:
+      - 127.0.0.1:25565:25565
       - "${TAILSCALE_HOMELAB_IP}:25565:25565"
     environment:
       EULA: "TRUE"
@@ -101,6 +102,17 @@ services:
       interval: 30s
       timeout: 5s
       retries: 2
+
+  # redlib
+  redlib:
+    image: quay.io/redlib/redlib:latest
+    restart: unless-stopped
+    volumes:
+      - ./config/redlib/redlib.toml:/redlib.toml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8080/settings"]
+      interval: 5m
+      timeout: 3s
 
   # miniflux
   miniflux:

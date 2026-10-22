@@ -18,6 +18,6 @@ envsubst '${NITTER_HMAC_KEY}' < ./config/nitter/nitter.template > ./config/nitte
 envsubst '${NITTER_HMAC_KEY}' < ./config/nitter/nitter_proxy.template > ./config/nitter/nitter_proxy.conf
 
 # copyparty
-envsubst '${COPYPARTY_MUKESH_PASSWORD} ${COPYPARTY_ANURAG_PASSWORD}' \
+envsubst '${COPYPARTY_MUKESH_PASSWORD} ${COPYPARTY_ANURAG_PASSWORD} ${COPYPARTY_AYAAN_PASSWORD}' \
   < ./config/copyparty/copyparty.template \
   > ./config/copyparty/copyparty.conf
