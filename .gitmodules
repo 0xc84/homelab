@@ -1,3 +1,6 @@
 [submodule "include/nitter_proxy"]
 	path = include/nitter_proxy
 	url = https://codeberg.org/shitter/nitter-proxy.git
+[submodule "include/linky-winky"]
+	path = include/linky-winky
+	url = git@github.com:threadlockers/links.git
