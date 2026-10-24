@@ -149,14 +149,14 @@ services:
     volumes:
       - linkding-db:/etc/linkding/data
 
-  linky-winky:
+  linky_winky:
     build: ./include/linky-winky
     restart: unless-stopped
     environment:
       - ENV=production
       - DISCORD_BOT_TOKEN=${LINKY_WINKY_DISCORD_BOT_TOKEN}
       - LINKS_CHANNEL_ID=${LINKY_WINKY_LINKS_CHANNEL_ID}
-      - LINKDING_BASE_URL=https://links.0xc84.fyi/api
+      - LINKDING_BASE_URL=http://linkding:9090/api
       - LINKDING_API_TOKEN=${LINKY_WINKY_LINKDING_API_TOKEN}
       - LINKDING_ADMIN_USERS=${LINKY_WINKY_LINKDING_ADMIN_USERS}
 
